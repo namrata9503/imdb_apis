@@ -1,0 +1,32 @@
+{
+  "name": "imdb-apis",
+  "version": "1.0.0",
+  "description": "about api call of IMDB",
+  "main": "server.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node server.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/namrata9503/imdb_apis.git"
+  },
+  "keywords": [
+    "express",
+    "mongoDB",
+    "mongoose",
+    "API"
+  ],
+  "author": "Namrata Chaudhari (nam9503@gmail.com)",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/namrata9503/imdb_apis/issues"
+  },
+  "homepage": "https://github.com/namrata9503/imdb_apis#readme",
+  "dependencies": {
+    "body-parser": "^1.18.3",
+    "express": "^4.16.3",
+    "mongoose": "^5.2.12",
+    "nodemon": "^1.18.4"
+  }
+}
