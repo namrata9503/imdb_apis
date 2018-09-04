@@ -17,7 +17,6 @@ const movieSchema = new mongoose.Schema({
         twitter: String
     }
 })
-
 const Movie = mongoose.model('Movie', movieSchema);
 
 module.exports = Movie

@@ -1,27 +1,47 @@
 const Movie = require('../models/Movie')
 
 exports.getAllMovies = (request, response) => {
-    Movie.find({}, (error, movies) => {
-        if (error) {
+
+    var limit = parseInt(request.query.limit) || 10
+    var query = Movie.find().limit(limit);
+    console.log(request.query);
+
+
+    if (request.query.duration) {
+        query.where({ duration: request.query.duration })
+    }
+    if (request.query.type) {
+        query.where({ type: request.query.type })
+    }
+    query.exec((error, movie) => {
+        if (error)
             response.json({
                 message: "Server error, Please try after some time.",
                 status: 500
             })
-        }
-        if (movies) {
-            response.json({
-                data: movies,
-                message: "movie data fetched",
-                status: 200
-            })
-        }
-        else {
-            response.json({
-                message: "No data found",
-                status: 200
-            })
-        }
+        response.json(movie)
     })
+    // Movie.find({}, (error, movies) => {
+    //     if (error) {
+    //         response.json({
+    //             message: "Server error, Please try after some time.",
+    //             status: 500
+    //         })
+    //     }
+    //     if (movies) {
+    //         response.json({
+    //             data: movies,
+    //             message: "movie data fetched",
+    //             status: 200
+    //         })
+    //     }
+    //     else {
+    //         response.json({
+    //             message: "No data found",
+    //             status: 200
+    //         })
+    //     }
+    // })
 }
 
 exports.postMovie = (request, response) => {
@@ -104,13 +124,13 @@ exports.updateMovie = (request, response) => {
 
 exports.deleteMovie = (request, response) => {
 
-    Movie.findByIdAndDelete({_id : request.params.id},(error,id)=>{
-        if(error) 
-        response.json({
-            
-            message: "Server error, Please try later.",
-            status: 500
-        })
-        response.json("Deleted : "+id)
+    Movie.findByIdAndDelete({ _id: request.params.id }, (error, id) => {
+        if (error)
+            response.json({
+
+                message: "Server error, Please try later.",
+                status: 500
+            })
+        response.json("Deleted : " + id)
     })
 }
