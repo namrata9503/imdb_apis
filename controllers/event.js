@@ -36,7 +36,7 @@ exports.postEvent = (request, response) => {
         celebrities: request.body.celebrities,
         details: request.body.details,
         time: request.body.time
-       
+
 
     })
     event.save().then((event) => {
@@ -76,19 +76,18 @@ exports.updateEvent = (request, response) => {
     let {
         name,
         date,
-      
+
         awards,
         celebrities,
         details,
         time
-        
+
 
     } = request.body;
 
     Event.updateOne({ _id: request.params.id }, {
         name,
         date,
-      
         awards,
         celebrities,
         details,
@@ -106,13 +105,13 @@ exports.updateEvent = (request, response) => {
 
 exports.deleteEvent = (request, response) => {
 
-    Event.findByIdAndDelete({_id : request.params.id},(error,id)=>{
-        if(error) 
-        response.json({
-            
-            message: "Server error, Please try later.",
-            status: 500
-        })
-        response.json("Deleted : "+id)
+    Event.findByIdAndDelete({ _id: request.params.id }, (error, id) => {
+        if (error)
+            response.json({
+
+                message: "Server error, Please try later.",
+                status: 500
+            })
+        response.json("Deleted : " + id)
     })
 }

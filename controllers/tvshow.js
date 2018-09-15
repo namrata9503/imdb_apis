@@ -1,119 +1,162 @@
 const TvShow = require('../models/TvShow')
 
-exports.getAllTvShows = (request, response) => {
-    TvShow.find({}, (error, tvshows) => {
+exports.getAllTvShows = (req, res) => {
+    var query = TvShow.find()
+    if (req.query.title) {
+        query.where({ title: req.query.title });
+    }
+    query.select('title status -_id');
+    query.limit(req.query.limit || 10);
+    query.exec((error, tv) => {
         if (error) {
-            response.json({
+            res.json({
                 message: "Server error, Please try after some time.",
                 status: 500
-            })
+            });
         }
-        if (tvshows) {
-            response.json({
-                data: tvshows,
-                message: "movie data fetched",
+        if (tv) {
+            res.json({
+                data: tv,
+                message: "All Tvs fetched",
                 status: 200
-            })
-        }
-        else {
-            response.json({
+            });
+        } else {
+            res.json({
                 message: "No data found",
                 status: 200
-            })
+            });
         }
-    })
-}
-
-exports.postTvShow = (request, response) => {
-
-
-    console.log(request.body);
-    let tvshow = new TvShow({
-        title: request.body.title,
-        slug: request.body.slug,
-        episodes: request.body.episodes,
-        director: request.body.director,
-        startingDate: request.body.startingDate,
-        showTime: request.body.showTime,
-        celebrities: request.body.celebrities,
-        duration: request.body.duration
-
-    })
-    tvshow.save().then((tvshow) => {
-        console.log('tvshow Added');
-        response.json(tvshow);
     });
 }
 
-exports.getTvShowById = (request, response) => {
 
-    TvShow.findById(request.params.id, (error, tvshow) => {
-        if (error) {
-            response.json({
-                message: "Server error, Please try later.",
-                status: 500
-            })
-        }
-        if (tvshow) {
-            response.json({
-                data: tvshow,
-                message: request.params.id + " tvshow id fetched",
-                status: 200
-            })
-        }
-        else {
-            response.json({
-                message: "Not found",
-                status: 200
-            })
-        }
-    })
-}
-
-exports.updateTvShow = (request, response) => {
-    console.log(request.body);
+exports.postTvShow = (req, res) => {
 
     let {
         title,
-        slug,
-        director,
-        episodes,
-        startingDate,
-        celebrities,
-        showTime,
-        duration
+        posterUrl,
+        trailerUrl,
+        description,
+       // director,
+        stars,
+        episode,
+        photourl,
+        storyline,
+        keywords,
+        genres,
+        createdAt,
+        modifiedAt,
+        status
+    } = req.body;
 
-    } = request.body;
-
-    TvShow.updateOne({ _id: request.params.id }, {
+    var tv = new TvShow({
         title,
-        slug,
-        director,
-        episodes,
-        startingDate,
-        celebrities,
-        showTime,
-        duration
-    }, {}, (error, tvshow) => {
-        if (error)
-            response.json({
-                message: "Server error, Please try later.",
+        posterUrl,
+        trailerUrl,
+        description,
+       // director,
+        stars,
+        episode,
+        photourl,
+        storyline,
+        keywords,
+        genres,
+        createdAt,
+        modifiedAt,
+        status
+    });
+    tv.save().then((newShow) =>{
+        console.log('Added successfully');
+        res.json({
+            message: `Added ${newShow.title} successfully`,
+            status: 200
+        });
+    }).catch(function (err) {
+        if (err) {
+            console.log(err);
+            res.json({
+                message: 'Server error',
                 status: 500
-            })
-        response.json(tvshow);
+            });
+        }
+    });
+}
 
-    })
+exports.getTvShowById = (req, res) => {
+
+    Tv.findById(req.params.id, (err, tvShow) => {
+        if (err) {
+            res.json({
+                message: "Server error, Please try after some time.",
+                status: 500
+            });
+        }
+        if (tvShow) {
+            res.json({
+                data: tvShow,
+                message: "User data fetched successfully",
+                status: 200
+            });
+        } else {
+            res.json({
+                message: "No data found",
+                status: 200
+            });
+        }
+    });
+}
+
+exports.updateTvShow = (req, res) => {
+    console.log(req.body);
+    const {
+        title,
+        posterUrl,
+        trailerUrl,
+        description,
+       // director,
+        stars,
+        episode,
+        photourl,
+        storyline,
+        keywords,
+        genres,
+        status
+    } = req.body;
+    Tv.update({
+        _id: req.params.id
+    }, {
+            title,
+            posterUrl,
+            trailerUrl,
+            description,
+           // director,
+            stars,
+            episode,
+            photourl,
+            storyline,
+            keywords,
+            genres,
+            status
+        }, {}, (error, tv) => {
+            if (error)
+                res.json({
+                    error: error,
+                    status: 500
+                });
+            console.log(error);
+            res.json(tv);
+        });
 }
 
 exports.deleteTvShow = (request, response) => {
 
-    TvShow.findByIdAndDelete({_id : request.params.id},(error,id)=>{
-        if(error) 
-        response.json({
-            
-            message: "Server error, Please try later.",
-            status: 500
-        })
-        response.json("Deleted : "+id)
+    TvShow.findByIdAndDelete({ _id: request.params.id }, (error, id) => {
+        if (error)
+            response.json({
+
+                message: "Server error, Please try later.",
+                status: 500
+            })
+        response.json("Deleted : " + id)
     })
 }

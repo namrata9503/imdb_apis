@@ -1,47 +1,74 @@
 const Celebrity = require('../models/Celebrity')
 
-exports.getAllCelebrities = (request, response) => {
-    Celebrity.find({}, (error, celebrities) => {
-        if (error) {
-            response.json({
-                message: "Server error, Please try after some time.",
-                status: 500
-            })
-        }
-        if (celebrities) {
-            response.json({
-                data: celebrities,
-                message: "movie data fetched",
-                status: 200
-            })
-        }
-        else {
-            response.json({
-                message: "No data found",
-                status: 200
-            })
-        }
-    })
+exports.getAllCelebrities = (req, res) => {
+    var query = Celebrity.find()
+  if (req.query.name) {
+    query.where({ title: req.query.name });
+  }
+  query.select('name -_id');
+  query.limit(req.query.limit || 10);
+  query.exec((error, celebs) => {
+    if (error) {
+      res.json({
+        message: "Server error, Please try after some time.",
+        status: 500
+      });
+    }
+    if (celebs) {
+      res.json({
+        data: celebs,
+        message: "All celebs fetched",
+        status: 200
+      });
+    } else {
+      res.json({
+        message: "No data found",
+        status: 200
+      });
+    }
+  });
 }
 
-exports.postCelebrity = (request, response) => {
+exports.postCelebrity = (req, res) => {
+    let {
+        name,
+        pictureUrl,
+        details,
+        height,
+        bornInfo,
+        resume,
+        contact,
+        createdAt,
+        modifiedAt
+    } = req.body;
 
-
-    console.log(request.body);
-    let celebrity = new Celebrity({
-        name: request.body.name,
-        details: request.body.details,
-        bornInfo: request.body.bornInfo,
-        resume: request.body.resume,
-        contact: request.body.contact
-       
-
-    })
-    celebrity.save().then((celebrity) => {
-        console.log('celebrity Added');
-        response.json(celebrity);
+    var celeb = new Celebrity({
+        name,
+        pictureUrl,
+        details,
+        height,
+        bornInfo,
+        resume,
+        contact,
+        createdAt,
+        modifiedAt
     });
-}
+    celeb.save().then((newCeleb) => {
+        console.log('Added successfully');
+        res.json({
+            message: `Added ${newCeleb.name} successfully`,
+            status: 200
+        });
+    }).catch(function (err) {
+        if (err) {
+            console.log(err);
+            res.json({
+                message: 'Server error',
+                status: 500
+            });
+        }
+    });
+};
 
 exports.getCelebrityById = (request, response) => {
 
@@ -75,10 +102,10 @@ exports.updateCelebrity = (request, response) => {
         name,
         details,
         bornInfo,
-      
+
         resume,
         contact
-        
+
 
     } = request.body;
 
@@ -86,7 +113,7 @@ exports.updateCelebrity = (request, response) => {
         name,
         details,
         bornInfo,
-        
+
         resume,
         contact
     }, {}, (error, celebrity) => {
@@ -102,13 +129,13 @@ exports.updateCelebrity = (request, response) => {
 
 exports.deleteCelebrity = (request, response) => {
 
-    Celebrity.findByIdAndDelete({_id : request.params.id},(error,id)=>{
-        if(error) 
-        response.json({
-            
-            message: "Server error, Please try later.",
-            status: 500
-        })
-        response.json("Deleted : "+id)
+    Celebrity.findByIdAndDelete({ _id: request.params.id }, (error, id) => {
+        if (error)
+            response.json({
+
+                message: "Server error, Please try later.",
+                status: 500
+            })
+        response.json("Deleted : " + id)
     })
 }

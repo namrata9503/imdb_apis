@@ -2,6 +2,7 @@ const mongoose = require('mongoose')
 
 const celebritySchema = new mongoose.Schema({
     name: String,
+    pictureUrl: String,
     details: String,
     photos: Array,
     bornInfo: {
@@ -9,10 +10,16 @@ const celebritySchema = new mongoose.Schema({
         birthPlace : String,
         deathDate : Date
     },
+    height: {
+        value: Number,
+        unit: {type: String, enum: ['cm', 'inch'], default: 'cm'}
+      },
     videos: String,
     resume: String,
     contact: Array,
-    rank: Date
+    rank: Date,
+    createdAt: { type: Date, default: Date.now},
+    modifiedAt: Date
    
 })
 
